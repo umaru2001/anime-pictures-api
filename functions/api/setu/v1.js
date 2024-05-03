@@ -104,8 +104,7 @@ export async function onRequest(context) {
   }
 
   // 构建 SQL 查询语句
-  let sql = "SELECT";
-  sql += searchParams.has('count') ? " COUNT(*) AS count" : " url";
+  let sql = "SELECT url";
   sql += ` FROM \`${className}\``;
   if (validatedSqlParts.length > 0) {
     sql += ` WHERE ${validatedSqlParts.join(' and ')}`;
