@@ -11,6 +11,8 @@ export async function onRequest(context) {
 
   // 类别名字，标识表的表名
   const className = 'anime-pictures';
+  // D1 绑定数据库名字
+  const d1Name = 'anime_img_d1';
 
   // 检查是否是预检请求（OPTIONS 请求），如果是则返回 CORS 头部
   if (request.method === 'OPTIONS') {
@@ -110,7 +112,7 @@ export async function onRequest(context) {
   }
   var rows
   try {
-    rows = await env.anime_img_r2.prepare(sql).all()
+    rows = await env[d1Name].prepare(sql).all()
   }
   // SQL 查询失败。请先检查你的 SQL 是否有误；如果确认无误，请联系管理员。
   catch (error) {
