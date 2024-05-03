@@ -112,8 +112,9 @@ export async function onRequest(context) {
   try {
     rows = await env.anime_img_r2.prepare(sql).all()
   }
+  // SQL 查询失败。请先检查你的 SQL 是否有误；如果确认无误，请联系管理员。
   catch (error) {
-    return new Response('SQL 查询失败。请先检查你的 SQL 是否有误；如果确认无误，请联系管理员。', {
+    return new Response(error.message, {
       status: 400,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
