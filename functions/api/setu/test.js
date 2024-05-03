@@ -25,6 +25,8 @@ export async function onRequest(context) {
     });
   }
 
+  return new Response(null);
+
   // 其它情形，开始读取参数
   const url = new URL(request.url);
   // 检查URL中是否包含 "favicon.ico"

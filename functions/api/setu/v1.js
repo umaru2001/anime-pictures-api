@@ -109,7 +109,10 @@ export async function onRequest(context) {
   if (validatedSqlParts.length > 0) {
     sql += ` WHERE ${validatedSqlParts.join(' and ')}`;
   }
-  var rows
+  sql += " ORDER BY RANDOM()";
+  sql += (searchParams.has('count') && typeof searchParams.get('count') === 'number') ? ` LIMIT ${searchParams.get('count')}` : " LIMIT 1";
+
+  let rows
   try {
     rows = await env[d1Name].prepare(sql).all()
   }
