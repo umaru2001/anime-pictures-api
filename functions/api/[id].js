@@ -13,4 +13,4 @@ export async function onRequest(context) {
   }
   const info = JSON.stringify(return_data);
   return new Response(info);
-}
+};
