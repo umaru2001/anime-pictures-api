@@ -117,7 +117,7 @@ export async function onRequest(context) {
   // SQL 查询失败。请先检查你的 SQL 是否有误；如果确认无误，请联系管理员。
   catch (error) {
     const errMsg = searchParams.get('near_square') === true ? error.message : 'SQL 查询失败。请先检查你的 SQL 是否有误；如果确认无误，请联系管理员。';
-    return new Response(error.message, {
+    return new Response(errMsg, {
       status: 400,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
