@@ -100,7 +100,7 @@ export async function onRequest(context) {
   }
 
   // 构建 SQL 查询语句
-  let sql = "SELECT url";
+  let sql = `SELECT ${searchParams.get('json') ? '*' : 'url'}`;
   sql += ` FROM \`${className}\``;
   if (validatedSqlParts.length > 0) {
     sql += ` WHERE ${validatedSqlParts.join(' and ')}`;
