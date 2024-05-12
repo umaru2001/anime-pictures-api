@@ -20,13 +20,13 @@ export async function onRequest(context) {
     });
   }
 
-  // 普通二次元图片类别名
+  // 普通二次元图片类别名，以及它具有多少图片
   const classNames = [
-    'anime-pictures'
+    ['anime-pictures', 758]
   ];
   // R18 二次元图片类别名
   const r18ClassNames = [
-    'anime-r18-01'
+    ['anime-r18-01', 283]
   ];
   // D1 绑定数据库名字
   const d1Name = 'anime_img_d1';
@@ -49,12 +49,15 @@ export async function onRequest(context) {
   const searchParams = new URLSearchParams(url.search);
 
   // 默认选择 className 中的其中一个
-  let className = classNames[Math.floor(Math.random() * classNames.length)];
+  const defaultIndex = Math.floor(Math.random() * classNames.length);
+  let className = classNames[defaultIndex][0];
+  let classCount = classNames[defaultIndex][1];
 
   // 检查参数，确定表名
   if (searchParams.has("r18") && searchParams.get("r18")) {
     const _index = Math.floor(Math.random() * r18ClassNames.length);
-    className = r18ClassNames[_index];
+    className = r18ClassNames[_index][0];
+    classCount = r18ClassNames[_index][1];
   }
 
   // 构建 SQL 参数
@@ -97,6 +100,13 @@ export async function onRequest(context) {
   });
   if (resConditions.length > 0) {
     validatedSqlParts.push(`(${resConditions.join(' and ')})`);
+  }
+
+  // 如果查询语句为空，则返回一个完全随机的信息，不需要经过数据库筛选
+  // 这个时候可以指定一个 random id，配合索引进行查询优化
+  if (validatedSqlParts.length === 0) {
+    const _randomId = Math.floor(Math.random() * classCount) + 1;
+    validatedSqlParts.push(`id = ${_randomId}`);
   }
 
   // 构建 SQL 查询语句
