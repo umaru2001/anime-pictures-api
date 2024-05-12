@@ -9,11 +9,6 @@ export async function onRequest(context) {
     data, // arbitrary space for passing data between middlewares
   } = context;
 
-  // 类别名字，标识表的表名
-  const className = 'anime-pictures';
-  // D1 绑定数据库名字
-  const d1Name = 'anime_img_d1';
-
   // 检查是否是预检请求（OPTIONS 请求），如果是则返回 CORS 头部
   if (request.method === 'OPTIONS') {
     return new Response(null, {
@@ -24,6 +19,17 @@ export async function onRequest(context) {
       },
     });
   }
+
+  // 普通二次元图片类别名
+  const classNames = [
+    'anime-pictures'
+  ];
+  // R18 二次元图片类别名
+  const r18ClassNames = [
+    'anime-r18-01'
+  ];
+  // D1 绑定数据库名字
+  const d1Name = 'anime_img_d1';
 
   // 其它情形，开始读取参数
   const url = new URL(request.url);
@@ -41,27 +47,17 @@ export async function onRequest(context) {
 
   // https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams#%E6%96%B9%E6%B3%95
   const searchParams = new URLSearchParams(url.search);
-  // return Response.json(env.DEFAULT_TABLES);
-  // const tableNamesArray = [];
-  // // 获取所有目前存在的表名
-  // try {
-  //   const tableNameRows = await env.anime_img_r2.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name != '_cf_KV' AND name NOT LIKE 'sqlite_%';").all();
-  //   for (let index = 0; index < tableNameRows.results.length; index++) {
-  //     const tableNameRow = tableNameRows.results[index];
-  //     tableNamesArray.push(tableNameRow.name);
-  //   }
-  // }
-  // catch {
-  //   return new Response('服务器内部错误，这不是你的错。请联系管理员：“你忘了绑定 D1 数据库”', {
-  //     status: 500,
-  //     headers: {
-  //       'Content-Type': 'text/plain; charset=utf-8',
-  //     },
-  //   });
-  // }
 
-  // let isHasTableName = false;
+  // 默认选择 className 中的其中一个
+  let className = classNames[Math.floor(Math.random() * r18ClassNames.length)];
 
+  // 检查参数，确定表名
+  if (searchParams.has("r18") && searchParams.get("r18")) {
+    const _index = Math.floor(Math.random() * r18ClassNames.length);
+    className = r18ClassNames[_index];
+  }
+
+  // 构建 SQL 参数
   let validatedSqlParts = [];
 
   // 删除了原有根据 ua 来识别设备的逻辑
