@@ -49,7 +49,7 @@ export async function onRequest(context) {
   const searchParams = new URLSearchParams(url.search);
 
   // 默认选择 className 中的其中一个
-  let className = classNames[Math.floor(Math.random() * r18ClassNames.length)];
+  let className = classNames[Math.floor(Math.random() * classNames.length)];
 
   // 检查参数，确定表名
   if (searchParams.has("r18") && searchParams.get("r18")) {
