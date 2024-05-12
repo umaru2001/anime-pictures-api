@@ -123,6 +123,20 @@ export async function onRequest(context) {
     });
   }
 
+  // json 请求访问格式
+  if (searchParams.has('json') && searchParams.get('json')) {
+    const results = rows.results;
+    const randomResult = results[Math.floor(Math.random() * results.length)];
+    const jsonContent = JSON.stringify({
+      url: randomResult.url,
+      height: randomResult.height,
+      width: randomResult.width,
+      ratio: randomResult.ratio,
+      landscape: randomResult.landscape,
+    });
+    return new Response(jsonContent);
+  }
+
   let allUrls = [];
   rows.results.forEach(row => {
     allUrls.push(row.url);
