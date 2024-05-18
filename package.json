@@ -1,0 +1,17 @@
+{
+  "name": "anime-pictures-api",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^6.6.2",
+    "realm-web": "^2.0.0"
+  }
+}
