@@ -3,6 +3,7 @@ import * as Realm from 'realm-web';
 const rawPixivDomainName = 'i.pximg.net';
 const defaultPixivProxy = 'i.pixiv.re';
 
+let tags;
 let App;
 
 export async function onRequest(context) {
@@ -44,18 +45,28 @@ export async function onRequest(context) {
   // https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams#%E6%96%B9%E6%B3%95
   const searchParams = new URLSearchParams(url.search);
 
-  // // 删除了原有根据 ua 来识别设备的逻辑
-  // // 处理 landscape 参数
-  // if (searchParams.has("landscape")) {
-  //   const landscape = searchParams.get("landscape") === "1" ? 1 : 0;
-  //   validatedSqlParts.push("`landscape` = " + landscape);
-  // }
+  if (searchParams.has("tags")) {
+    const tagsStr = searchParams.get('tags');
+      try {
+        const _rawTags = JSON.parse(tagsStr);
+        if (Array.isArray(_rawTags) && _rawTags.length > 0 && _rawTags.length < 5) {
+          tags = _rawTags;
+        }
+      } catch {
+        tags = undefined;
+      }
+  };
 
-  // // 处理 near_square 参数
-  // if (searchParams.has('near_square')) {
-  //   const nearSquare = parseInt(searchParams.get('near_square')) === 1 ? true : false;
-  //   validatedSqlParts.push(`near_square = ${nearSquare}`);
-  // }
+  if (searchParams.has("r18") && searchParams.get("r18")) {
+    if (Array.isArray(tags) && tags.length > 0) {
+      // 若此时 Tags 中已经含有 R-18，那么什么也不做
+      if (tags.indexOf('R-18') === -1) {
+        tags.push('R-18');
+      }
+    } else {
+      tags = 'R-18';
+    }
+  };
 
   App = App || new Realm.App(env.MONGO_APP_NAME);
   let client
@@ -77,7 +88,7 @@ export async function onRequest(context) {
   const pixivImgs = client.db("pixiv").collection("pixiv02");
   try {
     result = await pixivImgs.aggregate([
-      { $match: { /* 查询条件 */ }},
+      { $match: tags ? { tags: convertToTagsParam() } : {}},
       { $sample: { size: 1 }}
     ])
   } catch (error) {
@@ -157,3 +168,13 @@ const getImgUrl = (rawData) => {
   const { original, regular, small, thumb } = rawData || {};
   return original || regular || small || thumb;
 };
+
+const convertToTagsParam = () => {
+  if (Array.isArray(tags)) {
+    return { $all: tags };
+  }
+  if (typeof tags === 'string') {
+    return tags;
+  }
+  return undefined;
+}

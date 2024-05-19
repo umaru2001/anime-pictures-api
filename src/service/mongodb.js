@@ -1,7 +1,7 @@
 import * as Realm from 'realm-web';
 
-const AppName = '';
-const AppKey = '';
+const AppName = 'application-0-itolhok';
+const AppKey = 'SLivWFwDrXNqgegLDqO6VqMnfs8Li6fxhWi50IMovGpeFEjfRkuOcGhDOyTczg7W';
 
 const run = async () => {
   const App = new Realm.App(AppName);
@@ -17,10 +17,10 @@ const run = async () => {
   
   let result;
   
-  const pixivImgs = client.db("pixiv").collection("pixiv01");
+  const pixivImgs = client.db("pixiv").collection("pixiv02");
   try {
     result = await pixivImgs.aggregate([
-      { $match: { /* 查询条件 */ }},
+      { $match: { tags: 'R-18' }},
       { $sample: { size: 1 }}
     ]);
   } catch (error) {
