@@ -128,22 +128,22 @@ export async function onRequest(context) {
   }
 
   // 处理代理参数
-  const proxyName = searchParams.get('proxy');
-  if (proxyName === 0 || proxyName === null) {
-    // pass
-  } else if (!proxyName) {
+  if (!searchParams.has('proxy')) {
     imgUrl?.replace(rawPixivDomainName, defaultPixivProxy);
   } else {
-    let target;
-    try {
-      // 传过来的是 URL
-      const innerUrl = new URL(proxyName);
-      target = innerUrl.hostname;
-    } catch {
-      // 传过来的不是 URL
-      target = proxyName;
-    } finally {
-      imgUrl?.replace(rawPixivDomainName, target ?? defaultPixivProxy);
+    const proxyName = searchParams.get('proxy');
+    if (proxyName) {
+      let _target;
+      try {
+        // 传过来的是 URL
+        const innerUrl = new URL(proxyName);
+        _target = innerUrl.hostname;
+      } catch {
+        // 传过来的不是 URL
+        _target = proxyName;
+      } finally {
+        imgUrl?.replace(rawPixivDomainName, _target ?? defaultPixivProxy);
+      }
     }
   }
 
