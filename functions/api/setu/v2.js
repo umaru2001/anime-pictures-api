@@ -129,7 +129,7 @@ export async function onRequest(context) {
 
   // 处理代理参数
   if (!searchParams.has('proxy')) {
-    imgUrl?.replace(rawPixivDomainName, defaultPixivProxy);
+    imgUrl = imgUrl?.replace(rawPixivDomainName, defaultPixivProxy);
   } else {
     const proxyName = searchParams.get('proxy');
     if (proxyName) {
@@ -142,7 +142,7 @@ export async function onRequest(context) {
         // 传过来的不是 URL
         _target = proxyName;
       } finally {
-        imgUrl?.replace(rawPixivDomainName, _target ?? defaultPixivProxy);
+        imgUrl = imgUrl?.replace(rawPixivDomainName, _target ?? defaultPixivProxy);
       }
     }
   }
