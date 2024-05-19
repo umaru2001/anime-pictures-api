@@ -74,7 +74,7 @@ export async function onRequest(context) {
 
   let result;
 
-  const pixivImgs = client.db("pixiv").collection("pixiv01");
+  const pixivImgs = client.db("pixiv").collection("pixiv02");
   try {
     result = await pixivImgs.aggregate([
       { $match: { /* 查询条件 */ }},
