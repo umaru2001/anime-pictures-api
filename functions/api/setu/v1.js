@@ -54,7 +54,8 @@ export async function onRequest(context) {
 
   // 普通二次元图片类别名，以及它具有多少图片
   const classNames = [
-    ['anime-pictures', 758]
+    ['anime-pictures', 758],
+    ['anime-pictures-01', 482]
   ];
   // R18 二次元图片类别名
   const r18ClassNames = [
