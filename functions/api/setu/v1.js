@@ -1,3 +1,35 @@
+/**
+ * 基于权重的随机选择器
+ * @param {Array<[string, number]>} items - 元组数组，格式为 [name: string, count: number]
+ * @returns {string|null} - 随机选择的name，如果输入为空则返回null
+ */
+function weightedRandom(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+        return null;
+    }
+
+    // 计算总权重
+    const totalWeight = items.reduce((sum, [, count]) => sum + count, 0);
+    if (totalWeight <= 0) {
+        return null;
+    }
+
+    // 生成随机数
+    const randomValue = Math.random() * totalWeight;
+    let cumulativeWeight = 0;
+
+    // 根据随机数选择对应的 name
+    for (const [name, count] of items) {
+        cumulativeWeight += count;
+        if (randomValue < cumulativeWeight) {
+            return [name, count];
+        }
+    }
+
+    // 理论上不会执行到这里，但为了代码完整性添加
+    return items[items.length - 1];
+}
+
 export async function onRequest(context) {
   // Contents of context object
   const {
@@ -45,20 +77,33 @@ export async function onRequest(context) {
     });
   }
 
+  /** 解析 r18 参数，以及确定应该要读取哪个桶 START */
+
   // https://developer.mozilla.org/zh-CN/docs/Web/API/URLSearchParams#%E6%96%B9%E6%B3%95
   const searchParams = new URLSearchParams(url.search);
 
   // 默认选择 className 中的其中一个
-  const defaultIndex = Math.floor(Math.random() * classNames.length);
-  let className = classNames[defaultIndex][0];
-  let classCount = classNames[defaultIndex][1];
-
-  // 检查参数，确定表名
+  let defaultClassName;
+  
   if (searchParams.has("r18") && searchParams.get("r18")) {
-    const _index = Math.floor(Math.random() * r18ClassNames.length);
-    className = r18ClassNames[_index][0];
-    classCount = r18ClassNames[_index][1];
+    defaultClassName = weightedRandom(r18ClassNames);
+  } else {
+    defaultClassName = weightedRandom(classNames);
   }
+
+  if (!defaultClassName) {
+    return new Response('请求出错了，错误码 001，请联系 API 管理员', {
+      status: 502,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+    });
+  }
+
+  let className = defaultClassName[0];
+  let classCount = defaultClassName[1];
+
+  /** 解析 r18 参数，以及确定应该要读取哪个桶 END */
 
   // 构建 SQL 参数
   let validatedSqlParts = [];
